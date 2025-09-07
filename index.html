@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Port Scanner</title>
+    <link rel="stylesheet" href="style.css">
+    
+</head>
+<body>
+    <div class="container">
+        <h2>Port Scanner</h2>
+       <form id="scanForm" method="POST" action="/scan">
+    <input type="text" name="host" placeholder="Enter Host (e.g., 127.0.0.1)" required><br>
+    <input type="number" name="start_port" placeholder="Start Port" value="1" required>
+    <input type="number" name="end_port" placeholder="End Port" value="100" required><br>
+    <button type="submit">Scan</button>
+</form>
+        <div class="result" id="result"></div>
+    </div>
+
+
+{% if result %}
+    <h2>Scan Results</h2>
+    <p>{{ result }}</p>
+{% endif %}
+
+</body>
+</html>
