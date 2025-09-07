@@ -1,23 +1,23 @@
 import socket
-import pytest
-from portscan import scan_ports  # adjust if your file is named differently
-
-def test_scan_known_open_port(monkeypatch):
-    # Mock socket to simulate port 80 is open
-    def fake_connect_ex(addr):
-        host, port = addr
-        return 0 if port == 80 else 1  # 0 means success
-    
-    monkeypatch.setattr(socket.socket, "connect_ex", lambda self, addr: fake_connect_ex(addr))
-    
-    open_ports = scan_ports("127.0.0.1", 79, 81)
-    assert 80 in open_ports
-    assert 79 not in open_ports
-    assert 81 not in open_ports
-
-def test_scan_no_open_ports(monkeypatch):
-    # Mock socket to simulate all ports closed
-    monkeypatch.setattr(socket.socket, "connect_ex", lambda self, addr: 1)
-    
-    open_ports = scan_ports("127.0.0.1", 20, 22)
-    assert open_ports == []
+def scan_ports(host, start_port, end_port):
+    open_ports = []
+    for port in range(start_port, end_port + 1):
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.settimeout(0.5)  # Timeout for the connection attempt
+        result = sock.connect_ex((host, port))
+        if result == 0:
+            open_ports.append(port)
+        sock.close()
+    return open_ports
+if __name__ == "__main__":
+    target_host = input("Enter the target host (IP or domain): ")
+    start = int(input("Enter the start port number: "))
+    end = int(input("Enter the end port number: "))
+    print(f"Scanning ports {start} to {end} on {target_host}...")
+    open_ports = scan_ports(target_host, start, end)
+    if open_ports:
+        print("Open ports:")
+        for port in open_ports:
+            print(f"Port {port} is open")
+    else:
+        print("No open ports found in the specified range.")
